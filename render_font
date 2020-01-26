@@ -1,0 +1,58 @@
+#!/usr/bin/python3
+#	espclock - ESP-based dot matrix clock with NTP synchronization
+#	Copyright (C) 2020-2020 Johannes Bauer
+#
+#	This file is part of espclock.
+#
+#	espclock is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; this program is ONLY licensed under
+#	version 3 of the License, later versions are explicitly excluded.
+#
+#	espclock is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with espclock; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#	Johannes Bauer <JohannesBauer@gmx.de>
+
+import json
+from UDisplay import UDisplay
+
+alphabet = "0123456789: "
+with open("vcr-osd-mono-20.json") as f:
+	font = json.load(f)
+
+glyphs = { definition["text"]: definition for definition in font["glyphs"] }
+
+def create_font_data(width, height, raw_data, cutoff = 0x7f):
+	glyph = UDisplay(width, height)
+	for y in range(glyph.height):
+		for x in range(glyph.width):
+			pixel = raw_data[(y * glyph.width) + x]
+			if pixel > cutoff:
+				glyph.set_pixel(x, y)
+	return bytes(glyph.buffer)
+
+print("from UDisplay import UDisplay")
+print()
+
+glyph_adjust = {
+	":": {
+		"xadvance":	-3,
+	},
+}
+
+print("glyphs = {")
+for char in sorted(alphabet):
+	adjust = glyph_adjust.get(char, { })
+	definition = glyphs[char]
+	raw_data = bytes.fromhex(definition["data"])
+	data = create_font_data(definition["width"], definition["height"], raw_data)
+	data_str = ", ".join("0x%02x" % (c) for c in data)
+	print("	\"%s\": UDisplay.create_glyph(width = %d, height = %d, xoffset = %d, yoffset = %d, xadvance = %d, data = bytes((%s)))," % (char, definition["width"], definition["height"], definition["xoffset"], definition["yoffset"], definition["xadvance"] + adjust.get("xadvance", 0), data_str))
+print("}")
