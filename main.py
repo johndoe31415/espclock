@@ -26,6 +26,7 @@ import socket
 from UNTPClient import UNTPClient
 from UDateTime import UDateTime
 from Configuration import configuration
+from DCF77Generator import DCF77Generator
 
 class Clock():
 	def __init__(self, config):
@@ -34,6 +35,7 @@ class Clock():
 		self._ntp = UNTPClient(self._config["ntp_server"])
 		self._last_sync = None
 		self._offset = 0
+		self._dcfgen = DCF77Generator()
 
 	def _init_wifi(self):
 		self._wifi = network.WLAN(network.STA_IF)
