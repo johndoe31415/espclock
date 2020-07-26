@@ -36,9 +36,15 @@ class Clock():
 		self._ntp = UNTPClient(self._config["ntp_server"])
 		self._last_sync = None
 		self._offset = 0
-		self._dcfgen = DCF77Generator()
-		self._dcfpin = machine.Pin(15, machine.Pin.OUT)
-		self._dcfled = machine.Pin(2, machine.Pin.OUT)
+		if self._config["mode"] == "dcf77":
+			self._dcfgen = DCF77Generator()
+			self._dcfpin = machine.Pin(15, machine.Pin.OUT)
+			self._dcfled = machine.Pin(2, machine.Pin.OUT)
+		elif self._config["mode"] == "spi_max7219_32x8":
+			# TODO implement me
+			pass
+		else:
+			raise NotImplementedError(self._config["mode"])
 
 	def _init_wifi(self):
 		self._wifi = network.WLAN(network.STA_IF)
@@ -83,9 +89,26 @@ class Clock():
 			self._dcfpin.value(0)
 			self._dcfled.value(0)
 
+	def _spi_max7219_interrupt(self, arg):
+		if not self._time_valid():
+			return
+
+		now_utc_timet = self._now()
+		now_local = UDateTime.unix_timet_to_local_time_tuple(now_utc_timet, UDateTime.tz_europe_berlin)
+		hour = now_local[3]
+		minute = now_local[4]
+
+		print(hour, minute)
+
 	def run(self):
 		self._init_wifi()
-		machine.Timer(1).init(mode = machine.Timer.PERIODIC, period = 1000, callback = self._dcf77_interrupt)
+		if self._config["mode"] == "dcf77":
+			machine.Timer(1).init(mode = machine.Timer.PERIODIC, period = 1000, callback = self._dcf77_interrupt)
+		elif self._config["mode"] == "spi_max7219_32x8":
+			machine.Timer(1).init(mode = machine.Timer.PERIODIC, period = 1000, callback = self._spi_max7219_interrupt)
+		else:
+			raise NotImplementedError(self._config["mode"])
+
 		while True:
 			if self._need_sync():
 				current_timet = self._ntp.sync()

@@ -5,4 +5,5 @@ configuration = {
 		"psk":		"local-wifi-psk",
 	},
 	"ntp_server":	"pool.ntp.org",
+	"mode":			"dcf77",				# dcf77 or spi_max7219_32x8
 }

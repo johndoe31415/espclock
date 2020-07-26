@@ -46,4 +46,5 @@ for target in targets:
 		print("Pushing file: %s" % (filename))
 		subprocess.check_call([ "webreplcmd", "--host", config["device_host"], "--password", config["webrepl_pass"], "put", filename, filename ])
 if args.reboot:
+	print("Rebooting device...")
 	subprocess.check_call([ "webreplcmd", "--host", config["device_host"], "--password", config["webrepl_pass"], "cmd", "import machine; machine.reset()" ])
