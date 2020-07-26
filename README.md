@@ -35,11 +35,14 @@ Initially, webrepl needs to be setup once:
 import webrepl_setup
 ```
 
-Then, the files can be pushed on the client (using the password you've
-specified during webrepl_setup). For example:
+After setting up webrepl and configuring WiFi manually, you can also configure
+you installation configuration file by copying `push_config_template.json` to
+`push_config.json` and editing the file (IP address of the device as well as
+the Webrepl password you have chosen). Then you can install everything by
+running:
 
 ```
-$ webreplcmd --host 192.168.2.201 --password S0OHcoka put main.py main.py
+$ ./install
 ```
 
 
