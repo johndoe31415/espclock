@@ -72,6 +72,10 @@ class UDisplay():
 		return ((self._buffer[byte] >> bit) & 1) != 0
 
 	def set_pixel(self, x, y):
+		if (x < 0) or (x >= self.width):
+			return
+		if (y < 0) or (y >= self.height):
+			return
 		(byte, bit) = self._offset(x, y)
 		self._buffer[byte] |= (1 << bit)
 

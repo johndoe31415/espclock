@@ -23,10 +23,10 @@
 from UDisplay import UDisplay
 from Font import glyphs
 
-display = UDisplay(64, 16)
+display = UDisplay(32, 8)
 for i in range(1440):
 	display.clear()
-	display.set_cursor(3, 0)
+	display.set_cursor(1, 8)
 	(hour, minute) = divmod(i, 60)
 	hm_str = "%2d:%02d" % (hour, minute)
 	for char in hm_str:
