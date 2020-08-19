@@ -23,9 +23,9 @@ class UDisplay():
 	def __init__(self, width, height, xoffset = None, yoffset = None, xadvance = None):
 		self._width = width
 		self._height = height
-
-		buffer_height = (self._height + 7) // 8
-		self._buffer = bytearray(self._width * buffer_height)
+		self._buffer_width = self._width
+		self._buffer_height = (self._height + 7) // 8
+		self._buffer = bytearray(self._buffer_width * self._buffer_height)
 		self._cursor = (0, 0)
 		self._xoffset = xoffset
 		self._yoffset = yoffset
@@ -62,10 +62,9 @@ class UDisplay():
 		return glyph
 
 	def _offset(self, x, y):
-		offset = (self._width * y) + x
-		byte = offset // 8
-		bit = offset % 8
-		return (byte, bit)
+		byte_offset = (y // 8) + (x * self._buffer_height)
+		bit_offset = y % 8
+		return (byte_offset, bit_offset)
 
 	def get_pixel(self, x, y):
 		(byte, bit) = self._offset(x, y)
@@ -97,6 +96,7 @@ class UDisplay():
 		self._cursor = (x, y)
 
 	def dump(self):
+		print(self._buffer.hex())
 		print("-" * (self.width * 2))
 		for y in range(self.height):
 			line = ""
