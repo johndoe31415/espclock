@@ -2,7 +2,8 @@
 	"device_host":	"192.168.1.123",
 	"webrepl_pass":	"KtZo3giV",
 	"install": {
-		"all":	[ "main.py", "Configuration.py", "UNTPClient.py", "UDateTime.py", "DCF77Generator.py" ],
+		"all":	[ "main.py", "Configuration.py", "UNTPClient.py", "UDateTime.py", "DCF77Generator.py", "Max7219.py" ],
+		"dev":	[ "Max7219.py" ],
 		"none": [ ]
 	}
 }

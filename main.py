@@ -26,13 +26,16 @@ import socket
 import machine
 from UNTPClient import UNTPClient
 from UDateTime import UDateTime
+from UDisplay import UDisplay
+from Font import glyphs
 from Configuration import configuration
 from DCF77Generator import DCF77Generator
+from Max7219 import Max7219
 
 class Clock():
 	def __init__(self, config):
 		self._config = config
-		self._wifi = None
+		self._wifi = self._init_wifi()
 		self._ntp = UNTPClient(self._config["ntp_server"])
 		self._last_sync = None
 		self._offset = 0
@@ -41,15 +44,18 @@ class Clock():
 			self._dcfpin = machine.Pin(15, machine.Pin.OUT)
 			self._dcfled = machine.Pin(2, machine.Pin.OUT)
 		elif self._config["mode"] == "spi_max7219_32x8":
-			# TODO implement me
-			pass
+			cspin = machine.Pin(12, machine.Pin.OUT)
+			spi = machine.SPI(1, 400000, sck = machine.Pin(14), mosi = machine.Pin(13))
+			self._display = UDisplay(32, 8)
+			self._max7219 = Max7219(cspin, spi, daisy_chain_length = 4)
 		else:
 			raise NotImplementedError(self._config["mode"])
 
 	def _init_wifi(self):
-		self._wifi = network.WLAN(network.STA_IF)
-		self._wifi.active(True)
-		self._wifi.connect(self._config["wifi"]["essid"], self._config["wifi"]["psk"])
+		wifi = network.WLAN(network.STA_IF)
+		wifi.active(True)
+		wifi.connect(self._config["wifi"]["essid"], self._config["wifi"]["psk"])
+		return wifi
 
 	def _now(self):
 		return time.time() + self._offset
@@ -98,10 +104,14 @@ class Clock():
 		hour = now_local[3]
 		minute = now_local[4]
 
-		print(hour, minute)
+		self._display.clear()
+		self._display.set_cursor(3, 8)
+		hm_str = "%2d:%02d" % (hour, minute)
+		for char in hm_str:
+			self._display.blit(glyphs[char])
+		self._max7219.send_display_data(self._display)
 
 	def run(self):
-		self._init_wifi()
 		if self._config["mode"] == "dcf77":
 			machine.Timer(1).init(mode = machine.Timer.PERIODIC, period = 1000, callback = self._dcf77_interrupt)
 		elif self._config["mode"] == "spi_max7219_32x8":

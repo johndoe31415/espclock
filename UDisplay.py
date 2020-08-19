@@ -108,6 +108,13 @@ class UDisplay():
 			print(line)
 		print("-" * (self.width * 2))
 
+	def get_row(self, y):
+		row_data = bytearray((self._width + 7) // 8)
+		for x in range(self._width):
+			if self.get_pixel(x, y):
+				row_data[x // 8] |= 1 << (7 - (x % 8))
+		return row_data
+
 	def blit(self, glyph):
 		for src_y in range(glyph.height):
 			dst_y = self._cursor[1] + src_y + glyph.yoffset
