@@ -41,7 +41,7 @@ class Clock():
 		self._offset = 0
 		self._debug = 0
 		self._statusled = machine.Pin(2, machine.Pin.OUT)
-		self._timezone = UTimezone.Europe_Berlin
+		self._timezone = UTimezone(config.get("timezone", "UTC"))
 		if self._config["mode"] == "dcf77":
 			self._dcfgen = DCF77Generator()
 			self._dcfpin = machine.Pin(15, machine.Pin.OUT)
@@ -49,7 +49,8 @@ class Clock():
 			cspin = machine.Pin(12, machine.Pin.OUT)
 			spi = machine.SPI(1, 400000, sck = machine.Pin(14), mosi = machine.Pin(13))
 			self._display = UDisplay(32, 8)
-			self._max7219 = Max7219(cspin, spi, daisy_chain_length = 4)
+			brightness = config.get("max7219_brightness", 3)
+			self._max7219 = Max7219(cspin, spi, daisy_chain_length = 4, brightness = brightness)
 		else:
 			raise NotImplementedError("Mode: %s" % (self._config["mode"]))
 
