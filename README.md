@@ -51,7 +51,7 @@ There is a configuration file, "Configuration.py" which you need to create to
 let espclock know what it should do. Here's the `Configuration_template.json`
 file:
 
-```json
+```python
 configuration = {
 	"comment": "Copy this file to 'Configuration.py', set the ESSID and psk and push it on the ESP.",
 	"wifi": {
