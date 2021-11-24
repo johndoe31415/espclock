@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #	espclock - ESP-based dot matrix clock with NTP synchronization
-#	Copyright (C) 2020-2020 Johannes Bauer
+#	Copyright (C) 2020-2021 Johannes Bauer
 #
 #	This file is part of espclock.
 #
@@ -25,4 +25,5 @@ from UDateTime import UDateTime
 
 ntp = UNTPClient("pool.ntp.org")
 t = ntp.sync()
-print(UDateTime.unix_timet_to_time_tuple(t))
+print("UTC          ", UDateTime.unix_timet_to_time_tuple(t))
+print("Europe/Berlin", UDateTime.unix_timet_to_local_time_tuple(t, UDateTime.tz_europe_berlin))
