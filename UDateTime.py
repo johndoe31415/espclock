@@ -1,5 +1,5 @@
 #	espclock - ESP-based dot matrix clock with NTP synchronization
-#	Copyright (C) 2020-2020 Johannes Bauer
+#	Copyright (C) 2020-2021 Johannes Bauer
 #
 #	This file is part of espclock.
 #
@@ -18,6 +18,12 @@
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 #	Johannes Bauer <JohannesBauer@gmx.de>
+
+import enum
+
+class UTimezone(enum.Enum):
+	UTC = "UTC"
+	Europe_Berlin = "Europe/Berlin"
 
 class UDateTime():
 	_DAYS_IN_MONTH_NONLEAP = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
@@ -110,20 +116,27 @@ class UDateTime():
 		return cls.time_tuple_to_y2k(time_tuple) + 946684800
 
 	@classmethod
-	def tz_europe_berlin(cls, time_t, timetuple):
-		first_april = cls.y2k_to_time_tuple(cls.time_tuple_to_y2k((timetuple[0], 4, 1, 0, 0, 0, -1)))
+	def _tz_europe_berlin(cls, time_t, utc_timetuple):
+		first_april = cls.y2k_to_time_tuple(cls.time_tuple_to_y2k((utc_timetuple[0], 4, 1, 0, 0, 0, -1)))
 		last_sunday_march = 31 - first_april[6]
 
-		first_november = cls.y2k_to_time_tuple(cls.time_tuple_to_y2k((timetuple[0], 11, 1, 0, 0, 0, -1)))
+		first_november = cls.y2k_to_time_tuple(cls.time_tuple_to_y2k((utc_timetuple[0], 11, 1, 0, 0, 0, -1)))
 		last_sunday_october = 31 - first_november[6]
 
-		mdhms = timetuple[1 : 1 + 5]
+		mdhms = utc_timetuple[1 : 1 + 5]
 		is_dst = (3, last_sunday_march, 1, 0, 0) <= mdhms < (10, last_sunday_october, 1, 0, 0)
 
 		second_offset = (3600 * 2) if is_dst else 3600
 		return cls.unix_timet_to_time_tuple(time_t + second_offset)
 
 	@classmethod
-	def unix_timet_to_local_time_tuple(cls, time_t, local_timezone):
-		ttuple = cls.unix_timet_to_time_tuple(time_t)
-		return local_timezone(time_t, ttuple)
+	def unix_timet_to_local_time_tuple(cls, time_t, timezone):
+		assert(isinstance(timezone, UTimezone))
+		utc_ttuple = cls.unix_timet_to_time_tuple(time_t)
+		if timezone == UTimezone.UTC:
+			return utc_ttuple
+		else:
+			handler = {
+				UTimezone.Europe_Berlin: cls._tz_europe_berlin,
+			}[timezone]
+			return handler(time_t, utc_ttuple)

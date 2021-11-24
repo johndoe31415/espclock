@@ -21,9 +21,9 @@
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
 from UNTPClient import UNTPClient
-from UDateTime import UDateTime
+from UDateTime import UDateTime, UTimezone
 
 ntp = UNTPClient("pool.ntp.org")
 t = ntp.sync()
 print("UTC          ", UDateTime.unix_timet_to_time_tuple(t))
-print("Europe/Berlin", UDateTime.unix_timet_to_local_time_tuple(t, UDateTime.tz_europe_berlin))
+print("Europe/Berlin", UDateTime.unix_timet_to_local_time_tuple(t, UTimezone.Europe_Berlin))

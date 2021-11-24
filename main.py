@@ -25,7 +25,7 @@ import machine
 import socket
 import machine
 from UNTPClient import UNTPClient
-from UDateTime import UDateTime
+from UDateTime import UDateTime, UTimezone
 from UDisplay import UDisplay
 import Font
 from Configuration import configuration
@@ -41,6 +41,7 @@ class Clock():
 		self._offset = 0
 		self._debug = 0
 		self._statusled = machine.Pin(2, machine.Pin.OUT)
+		self._timezone = UTimezone.Europe_Berlin
 		if self._config["mode"] == "dcf77":
 			self._dcfgen = DCF77Generator()
 			self._dcfpin = machine.Pin(15, machine.Pin.OUT)
@@ -82,7 +83,7 @@ class Clock():
 			return
 
 		now_utc_timet = self._now()
-		now_local = UDateTime.unix_timet_to_local_time_tuple(now_utc_timet, UDateTime.tz_europe_berlin)
+		now_local = UDateTime.unix_timet_to_local_time_tuple(now_utc_timet, self._timezone)
 		hour = now_local[3]
 		minute = now_local[4]
 		second = now_local[5]
@@ -114,7 +115,7 @@ class Clock():
 			return
 
 		now_utc_timet = self._now()
-		now_local = UDateTime.unix_timet_to_local_time_tuple(now_utc_timet, UDateTime.tz_europe_berlin)
+		now_local = UDateTime.unix_timet_to_local_time_tuple(now_utc_timet, self._timezone)
 		hour = now_local[3]
 		minute = now_local[4]
 
