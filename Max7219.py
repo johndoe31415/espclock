@@ -28,11 +28,12 @@ class Max7219():
 	COMMAND_SHUTDOWN = 0x0c
 	COMMAND_DISPLAY_TEST = 0x0f
 
-	def __init__(self, cspin, spi, daisy_chain_length = 1):
+	def __init__(self, cspin, spi, daisy_chain_length = 1, brightness = 0):
 		self._cspin = cspin
 		self._cspin.value(1)
 		self._spi = spi
 		self._daisy_chain_length = daisy_chain_length
+		self._brightness = brightness
 		self._initialize_max7219()
 
 	def _initialize_max7219(self):
@@ -41,7 +42,7 @@ class Max7219():
 		self._send_command(self.COMMAND_SHUTDOWN, [ 1 ] * self._daisy_chain_length)
 		self._send_command(self.COMMAND_DECODE_MODE, [ 0 ] * self._daisy_chain_length)
 		self._send_command(self.COMMAND_SCAN_LIMIT, [ 7 ] * self._daisy_chain_length)
-		self.set_brightness(0)
+		self.set_brightness(self._brightness)
 		self._send_command(self.COMMAND_DISPLAY_TEST, [ 0 ] * self._daisy_chain_length)
 
 	def set_brightness(self, value):
