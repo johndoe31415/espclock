@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #	espclock - ESP-based dot matrix clock with NTP synchronization
-#	Copyright (C) 2020-2020 Johannes Bauer
+#	Copyright (C) 2020-2021 Johannes Bauer
 #
 #	This file is part of espclock.
 #
@@ -25,7 +25,7 @@ import datetime
 import calendar
 import pytz
 
-from UDateTime import UDateTime
+from UDateTime import UDateTime, UTimezone
 
 def print_die_table():
 	die = 0
@@ -86,7 +86,7 @@ while True:
 #	ref = t
 
 	ref = lttuple(t)
-	got = UDateTime.unix_timet_to_local_time_tuple(t, UDateTime.tz_europe_berlin)
+	got = UDateTime.unix_timet_to_local_time_tuple(t, UTimezone.Europe_Berlin)
 	if ref != got:
 		print("ERROR")
 		print(t)
