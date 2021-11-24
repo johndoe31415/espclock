@@ -39,6 +39,7 @@ class Clock():
 		self._ntp = UNTPClient(self._config["ntp_server"])
 		self._last_sync = None
 		self._offset = 0
+		self._debug = 0
 		if self._config["mode"] == "dcf77":
 			self._dcfgen = DCF77Generator()
 			self._dcfpin = machine.Pin(15, machine.Pin.OUT)
@@ -111,11 +112,24 @@ class Clock():
 			self._display.blit(glyphs[char])
 		self._max7219.send_display_data(self._display)
 
+	def _debug_interrupt(self, arg):
+		self._debug += 1
+		if self._debug > 0xf:
+			self._debug = 0
+		text = "%d" % (self._debug)
+		self._max7219.set_brightness(self._debug)
+		self._display.clear()
+		self._display.set_cursor(3, 8)
+		for char in text:
+			self._display.blit(glyphs[char])
+		self._max7219.send_display_data(self._display)
+
 	def run(self):
 		if self._config["mode"] == "dcf77":
 			machine.Timer(1).init(mode = machine.Timer.PERIODIC, period = 1000, callback = self._dcf77_interrupt)
 		elif self._config["mode"] == "spi_max7219_32x8":
 			machine.Timer(1).init(mode = machine.Timer.PERIODIC, period = 1000, callback = self._spi_max7219_interrupt)
+			#machine.Timer(1).init(mode = machine.Timer.PERIODIC, period = 200, callback = self._debug_interrupt)
 		else:
 			raise NotImplementedError(self._config["mode"])
 
