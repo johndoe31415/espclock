@@ -41,9 +41,14 @@ $ esptool.py --chip esp32 --port /dev/ttyUSB0 erase_flash
 $ esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 460800 write_flash -z 0x1000 esp32-idf3-20191220-v1.12.bin
 ```
 
-Note: For some reason, I'm seeing errors using `esp32-20210902-v1.17.bin`.
-Reverted back to MicroPython version `esp32-idf3-20191220-v1.12.bin` and
-everything works flawlessly again.
+Note: For some reason, I'm seeing spurious errors using
+`esp32-20210902-v1.17.bin`. In particular, sometimes the !CS GPIO does not
+initialize properly and gets "stuck" in the LOW output (possibly also High-Z,
+not sure).  I've debugged this issue for quite a while until I realized the
+code was fine and it's MicroPython which is misbehaving for whatever reason.
+Since I don't think filing a bug makes a lot of sense, I've reverted back to
+MicroPython version `esp32-idf3-20191220-v1.12.bin` and everything works
+flawlessly with that version.
 
 
 ## Configuration of espclock
