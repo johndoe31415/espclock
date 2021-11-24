@@ -40,8 +40,11 @@ class Max7219():
 		self._send_command(self.COMMAND_SHUTDOWN, [ 1 ] * self._daisy_chain_length)
 		self._send_command(self.COMMAND_DECODE_MODE, [ 0 ] * self._daisy_chain_length)
 		self._send_command(self.COMMAND_SCAN_LIMIT, [ 7 ] * self._daisy_chain_length)
-		self._send_command(self.COMMAND_INTENSITY, [ 3 ] * self._daisy_chain_length)
+		self.set_brightness(1)
 		self._send_command(self.COMMAND_DISPLAY_TEST, [ 0 ] * self._daisy_chain_length)
+
+	def set_brightness(self, value):
+		self._send_command(self.COMMAND_INTENSITY, [ value ] * self._daisy_chain_length)
 
 	def _send_command(self, command, data):
 		packet = bytearray()
