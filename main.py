@@ -40,6 +40,7 @@ class Clock():
 		self._last_sync = None
 		self._offset = 0
 		self._debug = 0
+		self._update_count = 0
 		self._statusled = machine.Pin(2, machine.Pin.OUT)
 		self._timezone = UTimezone(config.get("timezone", "UTC"))
 		if self._config["mode"] == "dcf77":
@@ -109,9 +110,10 @@ class Clock():
 		if self._debug >= 1:
 			self._statusled.value(1 - self._statusled.value())
 		if not self._time_valid():
+			self._update_count += 1
 			self._display.clear()
-			self._display.set_cursor(round(time.time()) % 32, 8)
-			self._display.write(":")
+			self._display.set_cursor(12, 8)
+			self._display.write_glyph("wait" + str(self._update_count % 4))
 			self._max7219.send_display_data(self._display)
 			return
 

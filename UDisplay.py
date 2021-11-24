@@ -128,6 +128,12 @@ class UDisplay():
 					self.set_pixel(dst_x, dst_y)
 		self._cursor = (self._cursor[0] + glyph.xadvance, self._cursor[1])
 
+	def write_glyph(self, glyph_name, font_name = "default"):
+		font = self._FONTS.get(font_name, { })
+		glyph = font.get(glyph_name)
+		if glyph is not None:
+			self.blit(glyph)
+
 	def write(self, text, font_name = "default"):
 		font = self._FONTS.get(font_name, { })
 		for char in text:

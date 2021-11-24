@@ -28,6 +28,11 @@ for i in range(1440):
 	display.clear()
 	display.set_cursor(3, 8)
 	(hour, minute) = divmod(i, 60)
-	hm_str = "%2d:%02d" % (hour, minute)
-	display.write(hm_str)
+	display.write("%2d:%02d" % (hour, minute))
+	display.dump()
+
+for i in range(4):
+	display.clear()
+	display.set_cursor(12, 8)
+	display.write_glyph("wait" + str(i % 4))
 	display.dump()

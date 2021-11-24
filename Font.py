@@ -13,3 +13,8 @@ UDisplay.create_glyph(font_name, "6", width = 5, height = 7, xoffset = 0, yoffse
 UDisplay.create_glyph(font_name, "7", width = 5, height = 7, xoffset = 0, yoffset = -7, xadvance = 6, data = bytes((0x01, 0x71, 0x09, 0x05, 0x03))),
 UDisplay.create_glyph(font_name, "8", width = 5, height = 7, xoffset = 0, yoffset = -7, xadvance = 6, data = bytes((0x36, 0x49, 0x49, 0x49, 0x36))),
 UDisplay.create_glyph(font_name, "9", width = 5, height = 7, xoffset = 0, yoffset = -7, xadvance = 6, data = bytes((0x26, 0x49, 0x49, 0x49, 0x3e))),
+
+UDisplay.create_glyph(font_name, "wait0", width = 8, height = 8, xoffset = 0, yoffset = -8, xadvance = 9, data = bytes((0x3c, 0x42, 0x81, 0x8f, 0x8f, 0x81, 0x42, 0x3c))),
+UDisplay.create_glyph(font_name, "wait1", width = 8, height = 8, xoffset = 0, yoffset = -8, xadvance = 9, data = bytes((0x3c, 0x42, 0x81, 0x81, 0x99, 0x99, 0x5a, 0x3c))),
+UDisplay.create_glyph(font_name, "wait2", width = 8, height = 8, xoffset = 0, yoffset = -8, xadvance = 9, data = bytes((0x3c, 0x42, 0x81, 0xf1, 0xf1, 0x81, 0x42, 0x3c))),
+UDisplay.create_glyph(font_name, "wait3", width = 8, height = 8, xoffset = 0, yoffset = -8, xadvance = 9, data = bytes((0x3c, 0x5a, 0x99, 0x99, 0x81, 0x81, 0x42, 0x3c))),
