@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #	espclock - ESP-based dot matrix clock with NTP synchronization
-#	Copyright (C) 2020-2020 Johannes Bauer
+#	Copyright (C) 2020-2021 Johannes Bauer
 #
 #	This file is part of espclock.
 #
@@ -25,7 +25,7 @@ import json
 import subprocess
 from FriendlyArgumentParser import FriendlyArgumentParser
 
-parser = FriendlyArgumentParser(description = "In.")
+parser = FriendlyArgumentParser(description = "Installation of the espclock project onto an ESP32.")
 parser.add_argument("-c", "--config-file", metavar = "filename", type = str, default = "push_config.json", help = "Specifies configuration file to use. Defaults to %(default)s.")
 parser.add_argument("-r", "--reboot", action = "store_true", help = "Reboot device after pushing files.")
 parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increases verbosity. Can be specified multiple times to increase.")
