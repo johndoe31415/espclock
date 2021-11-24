@@ -1,5 +1,5 @@
 #	espclock - ESP-based dot matrix clock with NTP synchronization
-#	Copyright (C) 2020-2020 Johannes Bauer
+#	Copyright (C) 2020-2021 Johannes Bauer
 #
 #	This file is part of espclock.
 #
@@ -39,14 +39,15 @@ class UNTPClient():
 		packet += [ 0x00 ] * 8					# transmit TS
 		packet = bytes(packet)
 
-		addr = socket.getaddrinfo(self._hostname, 123)
-		if len(addr) == 0:
-			return None
-		addr = addr[0][-1]
-		sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		sock.settimeout(self._timeout_secs)
-		sock.sendto(packet, addr)
 		try:
+			addr = socket.getaddrinfo(self._hostname, 123)
+			if len(addr) == 0:
+				return None
+			addr = addr[0][-1]
+			sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+			sock.settimeout(self._timeout_secs)
+			sock.sendto(packet, addr)
+
 			offset = -8
 			response = sock.recv(len(packet))
 			timestamp_bin = response[offset : offset + 4]

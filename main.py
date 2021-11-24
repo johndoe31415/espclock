@@ -1,5 +1,5 @@
 #	espclock - ESP-based dot matrix clock with NTP synchronization
-#	Copyright (C) 2020-2020 Johannes Bauer
+#	Copyright (C) 2020-2021 Johannes Bauer
 #
 #	This file is part of espclock.
 #
@@ -40,22 +40,29 @@ class Clock():
 		self._last_sync = None
 		self._offset = 0
 		self._debug = 0
+		self._statusled = machine.Pin(2, machine.Pin.OUT)
 		if self._config["mode"] == "dcf77":
 			self._dcfgen = DCF77Generator()
 			self._dcfpin = machine.Pin(15, machine.Pin.OUT)
-			self._dcfled = machine.Pin(2, machine.Pin.OUT)
-		elif self._config["mode"] == "spi_max7219_32x8":
+		elif self._config["mode"] in [ "spi_max7219_32x8", "spi_max7219_32x8_debug" ]:
 			cspin = machine.Pin(12, machine.Pin.OUT)
 			spi = machine.SPI(1, 400000, sck = machine.Pin(14), mosi = machine.Pin(13))
 			self._display = UDisplay(32, 8)
 			self._max7219 = Max7219(cspin, spi, daisy_chain_length = 4)
 		else:
-			raise NotImplementedError(self._config["mode"])
+			raise NotImplementedError("Mode: %s" % (self._config["mode"]))
 
 	def _init_wifi(self):
 		wifi = network.WLAN(network.STA_IF)
 		wifi.active(True)
-		wifi.connect(self._config["wifi"]["essid"], self._config["wifi"]["psk"])
+		try:
+			wifi.connect(self._config["wifi"]["essid"], self._config["wifi"]["psk"])
+		except OSError as e:
+			# Sometimes we get "WiFi internal error" here when the hardware is
+			# in a weird state. Hard reset.
+			print("WiFi connect failed (%s). Hard resetting device." % (str(e)))
+			time.sleep(0.5)
+			machine.reset()
 		return wifi
 
 	def _now(self):
@@ -88,16 +95,24 @@ class Clock():
 
 		if bit is not None:
 			self._dcfpin.value(1)
-			self._dcfled.value(1)
+			self._statusled.value(1)
 			if bit == 0:
 				time.sleep(0.100)
 			else:
 				time.sleep(0.200)
 			self._dcfpin.value(0)
-			self._dcfled.value(0)
+			self._statusled.value(0)
 
 	def _spi_max7219_interrupt(self, arg):
+		if self._debug >= 1:
+			self._statusled.value(1 - self._statusled.value())
 		if not self._time_valid():
+			hm_str = ":"
+			self._display.clear()
+			self._display.set_cursor(round(time.time()) % 32, 8)
+			for char in hm_str:
+				self._display.blit(glyphs[char])
+			self._max7219.send_display_data(self._display)
 			return
 
 		now_utc_timet = self._now()
@@ -129,7 +144,8 @@ class Clock():
 			machine.Timer(1).init(mode = machine.Timer.PERIODIC, period = 1000, callback = self._dcf77_interrupt)
 		elif self._config["mode"] == "spi_max7219_32x8":
 			machine.Timer(1).init(mode = machine.Timer.PERIODIC, period = 1000, callback = self._spi_max7219_interrupt)
-			#machine.Timer(1).init(mode = machine.Timer.PERIODIC, period = 200, callback = self._debug_interrupt)
+		elif self._config["mode"] == "spi_max7219_32x8_debug":
+			machine.Timer(1).init(mode = machine.Timer.PERIODIC, period = 200, callback = self._debug_interrupt)
 		else:
 			raise NotImplementedError(self._config["mode"])
 
@@ -146,5 +162,18 @@ class Clock():
 				self._last_sync += 1
 			time.sleep(1)
 
-clk = Clock(configuration)
-clk.run()
+	def shutdown(self):
+		machine.Timer(1).deinit()
+
+# Without this initial delay sometimes the GPIOs are not properly initialized
+# and weird things happen. Not sure why.
+print("Booting...")
+time.sleep(0.5)
+print("Initializing ESPclock...")
+espclock = Clock(configuration)
+try:
+	espclock.run()
+	pass
+except KeyboardInterrupt:
+	espclock.shutdown()
+	raise

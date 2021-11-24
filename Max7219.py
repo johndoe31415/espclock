@@ -1,5 +1,5 @@
 #	espclock - ESP-based dot matrix clock with NTP synchronization
-#	Copyright (C) 2020-2020 Johannes Bauer
+#	Copyright (C) 2020-2021 Johannes Bauer
 #
 #	This file is part of espclock.
 #
@@ -30,6 +30,7 @@ class Max7219():
 
 	def __init__(self, cspin, spi, daisy_chain_length = 1):
 		self._cspin = cspin
+		self._cspin.value(1)
 		self._spi = spi
 		self._daisy_chain_length = daisy_chain_length
 		self._initialize_max7219()
@@ -40,7 +41,7 @@ class Max7219():
 		self._send_command(self.COMMAND_SHUTDOWN, [ 1 ] * self._daisy_chain_length)
 		self._send_command(self.COMMAND_DECODE_MODE, [ 0 ] * self._daisy_chain_length)
 		self._send_command(self.COMMAND_SCAN_LIMIT, [ 7 ] * self._daisy_chain_length)
-		self.set_brightness(1)
+		self.set_brightness(0)
 		self._send_command(self.COMMAND_DISPLAY_TEST, [ 0 ] * self._daisy_chain_length)
 
 	def set_brightness(self, value):
