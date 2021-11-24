@@ -31,7 +31,7 @@ The hardware pins that are used in these modes are, respectively:
 First, install esptool to flash the ESP32:
 
 ```
-pip3 install esptool webrepl
+$ pip3 install esptool webrepl
 ```
 
 Then, [download MicroPython](https://micropython.org/download#esp32) and flash it on the ESP:
