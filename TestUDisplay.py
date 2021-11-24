@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #	espclock - ESP-based dot matrix clock with NTP synchronization
-#	Copyright (C) 2020-2020 Johannes Bauer
+#	Copyright (C) 2020-2021 Johannes Bauer
 #
 #	This file is part of espclock.
 #
@@ -21,7 +21,7 @@
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
 from UDisplay import UDisplay
-from Font import glyphs
+import Font
 
 display = UDisplay(32, 8)
 for i in range(1440):
@@ -29,6 +29,5 @@ for i in range(1440):
 	display.set_cursor(3, 8)
 	(hour, minute) = divmod(i, 60)
 	hm_str = "%2d:%02d" % (hour, minute)
-	for char in hm_str:
-		display.blit(glyphs[char])
+	display.write(hm_str)
 	display.dump()

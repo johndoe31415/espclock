@@ -27,7 +27,7 @@ import machine
 from UNTPClient import UNTPClient
 from UDateTime import UDateTime
 from UDisplay import UDisplay
-from Font import glyphs
+import Font
 from Configuration import configuration
 from DCF77Generator import DCF77Generator
 from Max7219 import Max7219
@@ -107,11 +107,9 @@ class Clock():
 		if self._debug >= 1:
 			self._statusled.value(1 - self._statusled.value())
 		if not self._time_valid():
-			hm_str = ":"
 			self._display.clear()
 			self._display.set_cursor(round(time.time()) % 32, 8)
-			for char in hm_str:
-				self._display.blit(glyphs[char])
+			self._display.write(":")
 			self._max7219.send_display_data(self._display)
 			return
 
@@ -122,21 +120,17 @@ class Clock():
 
 		self._display.clear()
 		self._display.set_cursor(3, 8)
-		hm_str = "%2d:%02d" % (hour, minute)
-		for char in hm_str:
-			self._display.blit(glyphs[char])
+		self._display.write("%2d:%02d" % (hour, minute))
 		self._max7219.send_display_data(self._display)
 
 	def _debug_interrupt(self, arg):
 		self._debug += 1
 		if self._debug > 0xf:
 			self._debug = 0
-		text = "%d" % (self._debug)
 		self._max7219.set_brightness(self._debug)
 		self._display.clear()
 		self._display.set_cursor(3, 8)
-		for char in text:
-			self._display.blit(glyphs[char])
+		self._display.write(str(self._debug))
 		self._max7219.send_display_data(self._display)
 
 	def run(self):

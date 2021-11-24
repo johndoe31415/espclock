@@ -1,5 +1,5 @@
 #	espclock - ESP-based dot matrix clock with NTP synchronization
-#	Copyright (C) 2020-2020 Johannes Bauer
+#	Copyright (C) 2020-2021 Johannes Bauer
 #
 #	This file is part of espclock.
 #
@@ -20,6 +20,8 @@
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
 class UDisplay():
+	_FONTS = { }
+
 	def __init__(self, width, height, xoffset = None, yoffset = None, xadvance = None):
 		self._width = width
 		self._height = height
@@ -56,10 +58,12 @@ class UDisplay():
 		return self._xadvance
 
 	@classmethod
-	def create_glyph(cls, width, height, xoffset, yoffset, xadvance, data):
+	def create_glyph(cls, font_name, glyph_name, width, height, xoffset, yoffset, xadvance, data):
 		glyph = cls(width, height, xoffset = xoffset, yoffset = yoffset, xadvance = xadvance)
 		glyph._buffer = data
-		return glyph
+		if font_name not in cls._FONTS:
+			cls._FONTS[font_name] = { }
+		cls._FONTS[font_name][glyph_name] = glyph
 
 	def _offset(self, x, y):
 		byte_offset = (y // 8) + (x * self._buffer_height)
@@ -123,3 +127,10 @@ class UDisplay():
 					dst_x = self._cursor[0] + src_x + glyph.xoffset
 					self.set_pixel(dst_x, dst_y)
 		self._cursor = (self._cursor[0] + glyph.xadvance, self._cursor[1])
+
+	def write(self, text, font_name = "default"):
+		font = self._FONTS.get(font_name, { })
+		for char in text:
+			glyph = font.get(char)
+			if glyph is not None:
+				self.blit(glyph)
