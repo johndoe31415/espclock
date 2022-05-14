@@ -1,5 +1,5 @@
 #	espclock - ESP-based dot matrix clock with NTP synchronization
-#	Copyright (C) 2020-2021 Johannes Bauer
+#	Copyright (C) 2020-2022 Johannes Bauer
 #
 #	This file is part of espclock.
 #
@@ -19,9 +19,7 @@
 #
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
-import enum
-
-class UTimezone(enum.Enum):
+class UTimezone():
 	UTC = "UTC"
 	Europe_Berlin = "Europe/Berlin"
 
@@ -131,7 +129,6 @@ class UDateTime():
 
 	@classmethod
 	def unix_timet_to_local_time_tuple(cls, time_t, timezone):
-		assert(isinstance(timezone, UTimezone))
 		utc_ttuple = cls.unix_timet_to_time_tuple(time_t)
 		if timezone == UTimezone.UTC:
 			return utc_ttuple

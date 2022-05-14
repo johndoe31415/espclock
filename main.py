@@ -1,5 +1,5 @@
 #	espclock - ESP-based dot matrix clock with NTP synchronization
-#	Copyright (C) 2020-2021 Johannes Bauer
+#	Copyright (C) 2020-2022 Johannes Bauer
 #
 #	This file is part of espclock.
 #
@@ -42,7 +42,7 @@ class Clock():
 		self._debug = 0
 		self._update_count = 0
 		self._statusled = machine.Pin(2, machine.Pin.OUT)
-		self._timezone = UTimezone(config.get("timezone", "UTC"))
+		self._timezone = config.get("timezone", "UTC")
 		if self._config["mode"] == "dcf77":
 			self._dcfgen = DCF77Generator()
 			self._dcfpin = machine.Pin(15, machine.Pin.OUT)
