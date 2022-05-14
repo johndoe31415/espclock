@@ -63,8 +63,8 @@ class Clock():
 		except OSError as e:
 			# Sometimes we get "WiFi internal error" here when the hardware is
 			# in a weird state. Hard reset.
-			print("WiFi connect failed (%s). Hard resetting device." % (str(e)))
-			time.sleep(0.5)
+			print("WiFi connect failed (%s). Hard resetting device in 30 seconds..." % (str(e)))
+			time.sleep(30)
 			machine.reset()
 		return wifi
 
